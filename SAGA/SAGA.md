@@ -609,27 +609,57 @@ if not CA_CONFIG:
 
 ### 四、实验复现
 
+复现环境：华硕 TX Air FA401KM 笔记本，AMD 处理器（约 2.0 GHz）、32 GB 内存，NVIDIA GeForce RTX 5060 笔记本显卡（8 GB 显存，驱动 572.97，CUDA 12.8），运行 Windows 11 家庭版中文版（Build 26200）；使用 WSL2，项目运行在 WSL2 中，并通过 Miniconda 管理 Python 环境。
+
 #### 1 Overhead Evaluation
 
 ##### 1.1 Cryptographic Overhead
 
 原文结果: <img src="E:\Github同步\PaperTrail\SAGA\saga\overhead by saga.png" alt="image-20261020133037144" style="zoom: 67%;" />	
 
-我通过注册用户`raj`，得到我的实验结果（只统计了一次注册的时间，会不严谨，但仅供参考）： 
+我通过自己写一个用户`raytao.yaml`，该用户包括一个智能体`calendar_agent`，得到我的实验结果（只统计了一次注册的时间，会不严谨，但仅供参考）： 
 
-***User Registration (User)***：**2.48** ms；***User Registration (Provider)***：**184.44** ms;	==与论文基本一致==
+```bash
+# 测试函数使用方法
+self.monitor = Monitor()
 
-***Agent Registration (User)***：**7.39** ms；***Agent Registration (Provider)***: **29.14**ms;
+self.monitor.start("provider:user_register")
+self.monitor.stop("provider:user_register")
+logger.log("OVERHEAD", f"provider:user_register: {self.monitor.elapsed('provider:user_register')}") # 返回的是累加时间
+```
 
-***Contract Resolution (Provider)***：ms；***Setup Phase (Initiator)***：ms；***Setup Phase （Receiver）***: ms;
+```bash
+# 用户注册：
+TZ=UTC python user.py --uconfig ../../user_configs/raytao.yaml --register
+# 智能体注册
+TZ=UTC python user.py --uconfig ../../user_configs/raytao.yaml --register-agents
+```
 
-***Token Generation (Initiator)***：ms；***Token Decryption (Receiver)：***ms；***Token Validation(Initiator)***：ms；***Token Validation(Receiver)***：ms。
+***User Registration (User)***：**1.78** ms；***User Registration (Provider)***：**189.50** ms;	==与论文基本一致==
 
+***Agent Registration (User)***：**8.76 ** ms；**Agent Registration (Provider)**: **187.38+30.11 = ** **217.49**ms; （这里是包括两个部分，及 `user_login`和`agent_register`。）==与论文基本一致==
 
+这块的部分源码没有给代码，论文也没有详细说明时间开销的具体边界包括啥，只能自己写代码测了一下，基本一致。：
 
+***Contract Resolution (Provider)***： **8.22**ms；***Setup Phase (Initiator)***：1.97 ms；***Setup Phase （Receiver）***: 1.08 ms;
 
+***Token Generation (Initiator)***：1.08 ms；***Token Decryption (Receiver)： 0.66***ms；
+
+***Token Validation(Initiator)***：0.21 ms；***Token Validation(Receiver)***：0.67ms。
+
+------
 
 ##### 1.2 Key Management Overhead
+
+###### 1.2.1 用户 OTK 生成的 计算开销
+
+原文：<img src="E:\Github同步\PaperTrail\SAGA\saga\OTK 生成开销.png" alt="image-20261021131122740" style="zoom:67%;" />
+
+原文测量数据显示：即使每次生成1000个OTK，每5min生成一次，在8小时内的生成时间总计依旧少于10s；而且 Provider 端的计算成本 （OTK的验证与存储）不超过0.5s。
+
+原文：<img src="E:\Github同步\PaperTrail\SAGA\saga\图3.png" alt="image-20261021134420691" style="zoom:67%;" />
+
+**在 1 个发起智能体（initiating agent）与 1 个、10 个和 100 个接收智能体（receiving agents）之间进行访问控制令牌派生（derivation）的计算开销，该开销随令牌生命周期（L）的变化而变化。即使是在较短的生命周期（1 分钟）下，总成本依然保持在较低水平。**
 
 
 
