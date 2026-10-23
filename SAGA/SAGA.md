@@ -535,7 +535,7 @@ if not CA_CONFIG:
 
 `model` 指定模型名称，`tools` 指定工具列表，`model_type` 指定模型接入类型，`api_base` 指定模型服务地址，`base_agent_type` 指定后端智能体类型，`specific_agent_instruction` 提供额外任务指令，`additional_authorized_imports` 指定智能体生成代码时允许额外导入的模块。
 
-![image-20261020132130640](saga\localagentconfig.png)
+![图片](saga\localagentconfig.png)
 
 该类继承 `Serializable`，便于从 YAML 等配置文件加载和保存配置；`__post_init__()` 在对象创建后进行校验，当前会检查使用 `OpenAIServerModel` 时是否提供 `api_base`。它本身不加载模型或执行任务，而是为后续创建具体后端提供配置。
 
