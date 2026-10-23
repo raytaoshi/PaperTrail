@@ -156,7 +156,7 @@ python -m http.server 8000 --bind 127.0.0.1 \
 Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...
 ```
 
-![图片描述](saga/CA 证书生成.png)
+![图片描述](saga/CA证书生成.png)
 
 ------
 
@@ -178,7 +178,7 @@ TZ=UTC python provider.py
 Running on https://127.0.0.1:5000
 ```
 
-![图片描述](saga/Provider 证书生成.png)
+![图片描述](saga/Provider证书生成.png)
 
 ------
 
@@ -225,7 +225,7 @@ cd ~/project/saga/experiments
 python hello_world.py listen ../user_configs/bob.yaml
 ```
 
-![图片描述](saga/通信 Bob.png)
+![图片描述](saga/通信Bob.png)
 
 ------
 
@@ -240,7 +240,7 @@ cd ~/project/saga/experiments
 python hello_world.py query ../user_configs/alice.yaml ../user_configs/bob.yaml
 ```
 
-![图片描述](saga/通信 Alice.png)
+![图片描述](saga/通信Alice.png)
 
 ------
 
